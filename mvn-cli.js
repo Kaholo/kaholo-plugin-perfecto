@@ -98,10 +98,10 @@ async function execute(params) {
 
     commandOutput = await exec(dockerCommand, {
         env: shellEnvironmentalVariables,
-    }).catch((error) => {
-        // throw new Error(error.stderr || error.stdout || error.message || error);
-        throw new Error(error.toString().replace(securityToken,'--'));
-    }).finally(async () => {await stopConnect(connect);});
+    }).catch(async (error) => {
+        await stopConnect(connect);
+        throw new Error(error.toString().replace(securityToken,'--'))
+    });
 
     if (commandOutput.stderr && !commandOutput.stdout) {
         await stopConnect(connect);
