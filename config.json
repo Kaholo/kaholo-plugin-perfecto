@@ -1,62 +1,94 @@
 {
-  "name": "kaholo-plugin-template",
-  "viewName": "Kaholo Template Plugin",
+  "name": "perfecto",
+  "viewName": "Perfecto",
+  "version": "1.0.009122022",
   "type": "executer",
-  "main": "app.js",
   "execProgram": "node",
-  "exposeRoute": false,
   "imgUrl": "logo.png",
-  "version": "2.0.0",
-  "description": "This plugin is only a generic template.",
+  "main": "app.js",
+  "description": "Kaholo Plugin for Perfecto",
   "category": [
-    "Basic Tools"
+    "Testing"
   ],
   "keywords": [
-    "template",
-    "plugin",
-    "kaholo",
-    "hello"
-   ],
-  "settings": [
-    {
-      "name": "helloName",
-      "viewName": "Default Hello Name",
-      "type": "string",
-      "description": "The person to whom to say hello by default",
-      "learnUrl": "https://docs.apify.com/api/v2#/introduction/authentication"
-    }
+    "perfecto",
+    "testing",
+    "test",
+    "local"
   ],
+  "auth": {
+    "authId": "perfectoAccount",
+    "params": [
+      {
+        "name": "cloudName",
+        "viewName": "Cloud Name",
+        "type": "string",
+        "required": true,
+        "placeholder": "ps",
+        "description": "Perfecto Cloud Name (without .perfectomobile.com)",
+        "learnUrl": "https://help.perfecto.io/perfecto-help/content/perfecto/automation-testing/find_users.htm?Highlight=user%20name"
+      },
+      {
+        "name": "securityToken",
+        "viewName": "Security Token",
+        "type": "vault",
+        "required": true,
+        "placeholder": "ThiSiSJu5taTest.",
+        "description": "Perfecto Security Token",
+        "learnUrl": "https://help.perfecto.io/perfecto-help/content/perfecto/automation-testing/generate_security_tokens.htm"
+      }
+    ]
+  },
   "methods": [
     {
-      "name": "hello",
-      "viewName": "Say hello",
+      "name": "runCommand",
+      "viewName": "Run Maven Command",
       "params": [
         {
-          "name": "helloName",
-          "viewName": "Hello Name",
+          "name": "workingDirectory",
+          "viewName": "Working Directory",
           "type": "string",
-          "required": false,
-          "placeholder": "World",
-          "default": "World",
-          "description": "The person to whom to say hello",
-          "learnUrl": "https://en.wikipedia.org/wiki/%22Hello,_World!%22_program"
+          "description": "Path to a directory on the Kaholo agent which contains pom.xml and all other files needed to complete the Maven build.",
+          "placeholder": "my-maven-project"
         },
         {
-          "name": "secret",
-          "viewName": "Secret",
-          "type": "vault",
-          "required": false,
-          "description": "A secret we might also say.",
-          "learnUrl": "https://en.wikipedia.org/wiki/%22Hello,_World!%22_program"
+          "name": "customImage",
+          "viewName": "Custom Image",
+          "type": "string",
+          "description": "Docker-style custom maven image with tag",
+          "placeholder": "maven:latest"
         },
         {
-          "name": "saySecret",
-          "viewName": "Say secret",
+          "name": "environmentVariables",
+          "viewName": "Environment Variables",
+          "description": "One key=value pair per line to be set as environment variables",
+          "placeholder": "USER=sally\nDEBUG_LEVEL=3",
+          "type": "text",
+          "parserType": "keyValuePairs"
+        },
+        {
+          "name": "jobName",
+          "viewName": "Job Name",
+          "type": "string",
+          "description": "Perfecto Job Name",
+          "default": "Job",
+          "required": false
+        },
+        {
+          "name": "command",
+          "viewName": "Command",
+          "type": "string",
+          "description": "Maven command to do the required build.",
+          "placeholder": "mvn --version",
+          "required": true
+        },
+        {
+          "name": "connect",
+          "viewName": "Perfecto Connect",
           "type": "boolean",
-          "required": false,
           "default": false,
-          "description": "If checked we'll also say the secret.",
-          "learnUrl": "https://en.wikipedia.org/wiki/%22Hello,_World!%22_program"
+          "description": "Starts Perfecto Connect tunnel if needed.",
+          "learnUrl": "https://help.perfecto.io/perfecto-help/content/perfecto/automation-testing/perfecto_connect.htm"
         }
       ]
     }

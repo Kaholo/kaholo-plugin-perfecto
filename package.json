@@ -1,7 +1,7 @@
 {
-  "name": "kaholo-plugin-template",
+  "name": "kaholo-plugin-perfecto",
   "version": "1.0.0",
-  "description": "A template for Kaholo plugin development",
+  "description": "Perfecto plugin for Kaholo",
   "main": "app.js",
   "scripts": {
     "test": "npx jest .",
@@ -10,14 +10,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Kaholo/kaholo-plugin-template.git"
+    "url": "git+https://github.com/Kaholo/kaholo-plugin-perfecto.git"
   },
   "author": "Kaholo",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/Kaholo/kaholo-plugin-template/issues"
+    "url": "https://github.com/Kaholo/kaholo-plugin-perfecto/issues"
   },
-  "homepage": "https://github.com/Kaholo/kaholo-plugin-template#readme",
+  "homepage": "https://github.com/Kaholo/kaholo-plugin-perfecto#readme",
   "dependencies": {
     "@kaholo/plugin-library": "^2.0.0"
   },
