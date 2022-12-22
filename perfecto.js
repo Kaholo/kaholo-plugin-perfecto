@@ -7,22 +7,22 @@ const {
 } = require("./helpers");
 
 const {
-  PERFECTO_BIN_PATH,
   PERFECTO_DEFAULT_DOWNLOAD_URL,
 } = require("./consts.json");
 
+const PLUGIN_PATH = path.dirname(process.argv[2]);
+const PERFECTO_BIN_PATH = path.resolve(PLUGIN_PATH, "perfecto-client/perfectoconnect");
 const PERFECTO_DIR = path.dirname(PERFECTO_BIN_PATH);
 const PERFECTO_BIN_NAME = path.basename(PERFECTO_BIN_PATH);
 
 async function ensurePerfectoBinaryIsInstalled(downloadUrl = PERFECTO_DEFAULT_DOWNLOAD_URL) {
   if (await isPerfectoInstalled()) {
-    return { installed: true };
+    return;
   }
-
-  return safeInstallPerfectoBinary(downloadUrl);
+  await installPerfectoBinary(downloadUrl);
 }
 
-async function safeInstallPerfectoBinary(downloadUrl = PERFECTO_DEFAULT_DOWNLOAD_URL) {
+async function installPerfectoBinary(downloadUrl = PERFECTO_DEFAULT_DOWNLOAD_URL) {
   const installCommand = [
     "mkdir -p $PERFECTO_DIR",
     "cd $PERFECTO_DIR",
@@ -40,13 +40,12 @@ async function safeInstallPerfectoBinary(downloadUrl = PERFECTO_DEFAULT_DOWNLOAD
       },
     });
   } catch (error) {
-    return { installed: false, error };
+    console.error("Perfecto installation failed, see error details below");
+    throw new Error(error.stderr || error.message);
   }
-
-  return { installed: true };
 }
 
-async function safeStartPerfecto(params) {
+async function startPerfecto(params) {
   await assertPerfectoIsInstalled();
 
   const {
@@ -95,7 +94,7 @@ async function assertPerfectoIsInstalled() {
 
 module.exports = {
   ensurePerfectoBinaryIsInstalled,
-  safeInstallPerfectoBinary,
-  safeStartPerfecto,
+  installPerfectoBinary,
+  startPerfecto,
   stopPerfecto,
 };

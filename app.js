@@ -2,8 +2,8 @@ const kaholoPluginLibrary = require("@kaholo/plugin-library");
 
 const { execute } = require("./mvn-cli");
 const {
-  safeInstallPerfectoBinary,
-  safeStartPerfecto,
+  installPerfectoBinary,
+  startPerfecto,
   stopPerfecto,
   ensurePerfectoBinaryIsInstalled,
 } = require("./perfecto");
@@ -31,13 +31,9 @@ async function runCommand(params) {
     return execute(params, additionalArguments);
   }
 
-  const { installed, error } = await ensurePerfectoBinaryIsInstalled(perfectoCustomDownloadUrl);
-  if (!installed) {
-    console.error("Perfecto installation failed, see error details below");
-    throw error;
-  }
+  await ensurePerfectoBinaryIsInstalled(perfectoCustomDownloadUrl);
 
-  const { tunnelId } = await safeStartPerfecto({ cloudName, securityToken });
+  const { tunnelId } = await startPerfecto({ cloudName, securityToken });
   additionalArguments.push(
     `-DtunnelId="${tunnelId}"`,
   );
@@ -51,7 +47,8 @@ async function updatePerfectoClient(params) {
   const { customDownloadUrl } = params;
 
   // if perfectoCustomDownloadUrl is undefined, the PERFECTO_DOWNLOAD_URL will be used
-  return safeInstallPerfectoBinary(customDownloadUrl);
+  await installPerfectoBinary(customDownloadUrl);
+  return { installed: true };
 }
 
 module.exports = kaholoPluginLibrary.bootstrap({
