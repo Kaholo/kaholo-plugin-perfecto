@@ -1,4 +1,3 @@
-const childProcess = require("child_process");
 const { docker } = require("@kaholo/plugin-library");
 const { homedir: getHomeDirectory } = require("os");
 const {
@@ -8,10 +7,7 @@ const {
 
 const {
   exec,
-  handleChildProcess,
-  handleCommonErrors,
   assertPathExistence,
-  stopConnect,
 } = require("./helpers");
 const {
   MAVEN_DOCKER_IMAGE,
@@ -19,31 +15,19 @@ const {
   MAVEN_CACHE_DIRECTORY_NAME,
 } = require("./consts.json");
 
-async function execute(params) {
+async function execute(params, additionalCommandArguments = []) {
   const {
+    command,
     workingDirectory,
     environmentVariables,
     secretEnvVars,
     customImage = MAVEN_DOCKER_IMAGE,
-    connect,
-    jobName,
-    cloudName,
     securityToken,
   } = params;
 
-  let { command } = params;
-
-  // if perfecto connect is required
-  if (connect) {
-    const { additionalCommandArguments } = await startConnect({ cloudName, securityToken });
-    command += additionalCommandArguments;
-  }
-
-  const jobNumber = Math.floor(Date.now() / 1000);
-  command += ` -B -Dreportium-job-name=${jobName} -Dreportium-job-number=${jobNumber} -DcloudName=${cloudName} -DsecurityToken=${securityToken}`;
-
+  const resolvedCommand = `${command} ${additionalCommandArguments.join(" ")}`;
   const dockerCommandBuildOptions = {
-    command: docker.sanitizeCommand(command, MAVEN_CLI_NAME),
+    command: docker.sanitizeCommand(resolvedCommand, MAVEN_CLI_NAME),
     image: customImage,
   };
 
@@ -88,13 +72,8 @@ async function execute(params) {
   const commandOutput = await exec(dockerCommand, {
     env: shellEnvironmentalVariables,
   }).catch(async (error) => {
-    await stopConnect(connect);
     throw new Error(error.toString().replace(securityToken, "--"));
   });
-
-  // stops perfecto connect, handling errors
-  // and not throwing it as stop command needs to be executed
-  await stopConnect(connect);
 
   if (commandOutput.stderr && !commandOutput.stdout) {
     throw new Error(commandOutput.stderr);
@@ -102,29 +81,7 @@ async function execute(params) {
     console.error(commandOutput.stderr);
   }
 
-  return `${commandOutput.stdout}\nReport Link: https://${cloudName}.app.perfectomobile.com/reporting/library?jobName[0]=${jobName}&jobNumber[0]=${jobNumber}`;
-}
-
-async function startConnect({ cloudName, securityToken }) {
-  await stopConnect(true);
-  const startConnectCommand = [
-    "wget https://downloads.connect.perfectomobile.com/clients/Perfecto-Connect-linux.tar",
-    "tar -xf Perfecto-Connect-linux.tar",
-    `./perfectoconnect start -c ${cloudName}.perfectomobile.com -s ${securityToken}`,
-  ].join(" && ");
-
-  const proc = childProcess.exec(startConnectCommand, {});
-  const tunnelLogs = await handleChildProcess(
-    proc,
-    { verifyExitCode: true },
-  ).catch(handleCommonErrors);
-
-  const tunnelId = tunnelLogs.trim().split("\n").pop();
-
-  console.info(tunnelLogs);
-  console.info(`Tunnel ID: ${tunnelId}`);
-
-  return { additionalCommandArguments: ` -DtunnelId="${tunnelId}" ` };
+  return commandOutput.stdout;
 }
 
 module.exports = {

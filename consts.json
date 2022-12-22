@@ -1,6 +1,7 @@
 {
     "MAVEN_DOCKER_IMAGE": "maven:3.8.6",
     "MAVEN_CLI_NAME": "mvn",
-    "MAVEN_CACHE_DIRECTORY_NAME": ".m2"
-  }
-  
+    "MAVEN_CACHE_DIRECTORY_NAME": ".m2",
+    "PERFECTO_BIN_PATH": "./perfecto-client/perfectoconnect",
+    "PERFECTO_DEFAULT_DOWNLOAD_URL": "https://downloads.connect.perfectomobile.com/clients/Perfecto-Connect-linux.tar"
+}

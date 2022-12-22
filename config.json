@@ -91,6 +91,19 @@
           "learnUrl": "https://help.perfecto.io/perfecto-help/content/perfecto/automation-testing/perfecto_connect.htm"
         }
       ]
+    },
+    {
+      "name": "updatePerfectoClient",
+      "viewName": "Update Perfecto Client",
+      "params": [
+        {
+          "name": "customDownloadUrl",
+          "viewName": "Perfecto Client Custom Download URL",
+          "type": "string",
+          "description": "If provided, the Perfecto Client will be downloaded from this URL.",
+          "learnUrl": "https://help.perfecto.io/perfecto-help/content/perfecto/automation-testing/download_the_perfecto_connect_client.htm"
+        }
+      ]
     }
   ]
 }
