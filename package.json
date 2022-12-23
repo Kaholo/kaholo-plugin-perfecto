@@ -1,6 +1,5 @@
 {
   "name": "kaholo-plugin-perfecto",
-  "version": "1.0.0",
   "description": "Perfecto plugin for Kaholo",
   "main": "app.js",
   "scripts": {

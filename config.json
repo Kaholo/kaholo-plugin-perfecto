@@ -1,7 +1,7 @@
 {
   "name": "perfecto",
   "viewName": "Perfecto",
-  "version": "1.0.009122022",
+  "version": "1.0.0",
   "type": "executer",
   "execProgram": "node",
   "imgUrl": "logo.png",
