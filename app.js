@@ -37,7 +37,13 @@ async function runCommand(params) {
   additionalArguments.push(
     `-DtunnelId="${tunnelId}"`,
   );
-  const mavenOutput = await execute(params, additionalArguments).finally(stopPerfecto);
+
+  let mavenOutput;
+  try {
+    mavenOutput = await execute(params, additionalArguments);
+  } finally {
+    await stopPerfecto();
+  }
 
   const reportLink = `https://${cloudName}.app.perfectomobile.com/reporting/library?jobName[0]=${jobName}&jobNumber[0]=${jobNumber}`;
   return `${mavenOutput}\nReport Link: ${reportLink}`;
