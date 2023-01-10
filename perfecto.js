@@ -94,8 +94,6 @@ function handlePerfectoError(error) {
   if (error.message) {
     console.error(`[MESSAGE] ${error.message}`);
   }
-  // const message = (error.stdout || error.message || String(error)).toLowerCase();
-  // throw new Error(message);
 }
 
 function isPerfectoInstalled() {
