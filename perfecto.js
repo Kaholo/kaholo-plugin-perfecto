@@ -55,7 +55,10 @@ async function startPerfecto(params) {
 
   const startCommand = `./${PERFECTO_BIN_NAME} start -c ${cloudName}.perfectomobile.com -s $SECURITY_TOKEN`;
   const startResult = await exec(startCommand, {
-    env: { SECURITY_TOKEN: securityToken },
+    env: {
+      ...process.env,
+      SECURITY_TOKEN: securityToken
+    },
     cwd: PERFECTO_DIR,
   }).catch(handlePerfectoError);
 
@@ -74,12 +77,23 @@ async function stopPerfecto() {
     cwd: PERFECTO_DIR,
   }).catch(handlePerfectoError);
 
-  return stopResult.stdout;
+  // typically this errors, leaving behind a [perfectoconnect] zombie child of process 1 (npm start)
+  // MESSAGE: Command failed: ./perfectoconnect stop
+  return;
 }
 
 function handlePerfectoError(error) {
-  const message = (error.stdout || error.message || String(error)).toLowerCase();
-  throw new Error(message);
+  if (error.stderr) {
+    throw new Error(error);
+  }
+  if (error.stdout) {
+    console.error(`[STDOUT] ${error.stdout}`);
+  }
+  if (error.message) {
+    console.error(`[MESSAGE] ${error.message}`);
+  }
+  // const message = (error.stdout || error.message || String(error)).toLowerCase();
+  // throw new Error(message);
 }
 
 function isPerfectoInstalled() {
