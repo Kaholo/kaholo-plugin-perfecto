@@ -57,7 +57,7 @@ async function startPerfecto(params) {
   const startResult = await exec(startCommand, {
     env: {
       ...process.env,
-      SECURITY_TOKEN: securityToken
+      SECURITY_TOKEN: securityToken,
     },
     cwd: PERFECTO_DIR,
   }).catch(handlePerfectoError);
@@ -79,7 +79,9 @@ async function stopPerfecto() {
 
   // typically this errors, leaving behind a [perfectoconnect] zombie child of process 1 (npm start)
   // MESSAGE: Command failed: ./perfectoconnect stop
-  return;
+  if (stopResult) {
+    console.error(JSON.stringify(stopResult));
+  }
 }
 
 function handlePerfectoError(error) {
