@@ -1,25 +1,63 @@
-const { bootstrap } = require("@kaholo/plugin-library");
+const kaholoPluginLibrary = require("@kaholo/plugin-library");
 
-async function hello(params) {
+const { execute } = require("./mvn-cli");
+const {
+  installPerfectoBinary,
+  startPerfecto,
+  stopPerfecto,
+  ensurePerfectoBinaryIsInstalled,
+} = require("./perfecto");
+
+async function runCommand(params) {
   const {
-    helloName,
-    saySecret,
-    secret,
+    connect,
+    perfectoCustomDownloadUrl,
+    cloudName,
+    securityToken,
+    jobName,
   } = params;
 
-  let greeting = `Hello ${helloName}!`;
+  const jobNumber = Math.floor(Date.now() / 1000);
+  const additionalArguments = [
+    "-B",
+    `-Dreportium-job-name=${jobName}`,
+    `-Dreportium-job-number=${jobNumber}`,
+    `-DcloudName=${cloudName}`,
+    `-DsecurityToken=${securityToken}`,
+  ];
 
-  if (saySecret && !secret) {
-    throw new Error("No secret was provided to say. Please provide a secret or uncheck \"Say Secret\".");
+  // If "connect" is false, do not use perfecto tunnel
+  if (!connect) {
+    return execute(params, additionalArguments);
   }
 
-  if (saySecret) {
-    greeting += `\nHere is the secret: ${secret}`;
+  await ensurePerfectoBinaryIsInstalled(perfectoCustomDownloadUrl);
+
+  const { tunnelId } = await startPerfecto({ cloudName, securityToken });
+  additionalArguments.push(
+    `-DtunnelId="${tunnelId}"`,
+  );
+
+  let mavenOutput;
+  try {
+    mavenOutput = await execute(params, additionalArguments);
+  } finally {
+    await stopPerfecto();
   }
 
-  return greeting;
+  const reportLink = `https://${cloudName}.app.perfectomobile.com/reporting/library?jobName[0]=${jobName}&jobNumber[0]=${jobNumber}`;
+  return `${mavenOutput}\nReport Link: ${reportLink}`;
 }
 
-module.exports = bootstrap({
-  hello,
+async function updatePerfectoClient(params) {
+  const { customDownloadUrl } = params;
+
+  // if perfectoCustomDownloadUrl is undefined, the PERFECTO_DOWNLOAD_URL will be used
+  await installPerfectoBinary(customDownloadUrl);
+  return { installed: true };
+}
+
+module.exports = kaholoPluginLibrary.bootstrap({
+  runCommand,
+  updatePerfectoClient,
 });
